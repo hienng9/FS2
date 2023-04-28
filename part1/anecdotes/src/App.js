@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+
 const Button = ({handleClick, text}) => <button onClick={handleClick}>{text}</button>
 const Display = ({text}) => <div>{text}</div>
 const DisplayVotes = ({value}) => <div>has {value} votes</div>
-const App =() => {
+
+const App =(notes) => {
+
+  const { notes } = notes
   const anecdotes = [
     'If it hurts, do it more often.',
     'Adding manpower to a late software project makes it later!',
@@ -32,6 +36,7 @@ const App =() => {
   console.log("points", points)
   console.log('max and index', max, index)
   return (
+
     <div>
       <h1>Anecdotes of the day</h1>
       <Display text={anecdotes[selected]} />
