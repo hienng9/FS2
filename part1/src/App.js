@@ -43,6 +43,7 @@ const App = () => {
   useEffect(hook, []) // the second parameter is used to specify how often the effect is run.
   // [] means only run along with the first render of the component.
   if (!notes) {
+    console.log(!notes)
     return null
   }
   const addNote = (event) => {
