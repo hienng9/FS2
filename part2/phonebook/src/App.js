@@ -7,6 +7,8 @@ import Notification from './components/Notification';
 import personService from './services/person';
 
 
+
+
 const App = () => {
   
   const [persons, setPersons] = useState([])
@@ -33,7 +35,7 @@ const App = () => {
     .update({id, changedPerson})
     .then(returnedPerson => setPersons(persons.map(p => p.id === id ? returnedPerson : p)))
     .catch(error =>{
-      setErrorMessage(`Information of ${newName} has already been removed from server`)
+      setErrorMessage(error.response.data.error)
 
       setTimeout(() => {
         setErrorMessage(null)
@@ -63,6 +65,13 @@ const App = () => {
           setAlertMessage(`Added ${newName}`)
           setTimeout(() => {
             setAlertMessage(null)}, 5000)
+      })
+      .catch(error => {
+        // console.log("error", error.response.data)
+        setErrorMessage(error.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
       })
     setNewName('')
     setNewNumber('')
