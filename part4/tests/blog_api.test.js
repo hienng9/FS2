@@ -4,6 +4,7 @@ const app = require('../app')
 const api = supertest(app)
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 beforeEach(async () => {
     await Blog.deleteMany({})
@@ -103,9 +104,8 @@ describe('get request', () => {
     test('get a specific blog', async () =>{
         const blogsAtStart = await helper.blogsInDb()
         const blogToView = blogsAtStart[0]
-        console.log('blog to view', blogToView)
         const blog = await api.get(`/api/blogs/${blogToView.id}`).expect(200).expect('Content-Type', /application\/json/)
-        console.log(blog.body)
+        
         expect(blog.body).toEqual(blogToView)
     
     })
@@ -122,6 +122,52 @@ describe('put request', () => {
         expect(filteredBlog).toHaveLength(1)
     })
 })
+
+describe("test user database", () => {
+    beforeEach(async () => {
+        await User.deleteMany()
+        const users = helper.initialUsers.map(user => new User(user))
+        const promiseArray = users.map(user => user.save())
+        await Promise.all(promiseArray)
+    })
+    test("username length less than 3 is not saved", async () => {
+        const faultyUser = {
+            username: 'hi',
+            name: "Hien",
+            password: "hoho"
+        }
+        await api.post('/api/users').send(faultyUser).expect(400)
+
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtEnd).toHaveLength(helper.initialUsers.length)
+    })
+    test("password with length less than 3 is not saved in database", async () => {
+        const faultyUser = {
+            username: 'hien',
+            name: "Hien",
+            password: "hi"
+        }
+        await api.post('/api/users').send(faultyUser).expect(400)
+
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtEnd).toHaveLength(helper.initialUsers.length)
+    })
+    test("A valid username and password will be saved in database", async () => {
+        const rightUser = {
+            username: 'hien',
+            name: "Hien",
+            password: "hi2345"
+        }
+        const saveUser = await api.post('/api/users').send(rightUser).expect(201).expect('Content-Type', /application\/json/)
+
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtEnd).toHaveLength(helper.initialUsers.length + 1)
+
+        const usernames = usersAtEnd.map(u => u.username)
+        expect(usernames).toContain("hien")
+    })
+})
+
 afterAll(async () => {
     await mongoose.connection.close()
 })
