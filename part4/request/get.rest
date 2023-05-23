@@ -1,4 +1,4 @@
-GET http://localhost:3003/api/blogs/646bade393c51ff25a108679
+GET http://localhost:3003/api/blogs/646badb62454f74b4d28c838
 
 ###
 GET http://localhost:3003/api/users

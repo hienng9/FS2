@@ -1,6 +1,6 @@
 POST http://localhost:3003/api/blogs
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhpZW50aGkiLCJpZCI6IjY0NmJiMmMxZWE4M2M4ZTZmMGY2YTY4ZCIsImlhdCI6MTY4NDgyMDIzNywiZXhwIjoxNjg0ODIzODM3fQ.8nDsY6M85cHOkqYUf4F8IBqjncDYqZC1JYbqBH7gBFg
+Authorization: Bearer 
 
 {
     "title": "It is time to learn React Node and more2",
@@ -10,7 +10,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhpZ
 }
 
 ### 
-PUT http://localhost:3003/api/blogs
+PUT http://localhost:3003/api/blogs/646badb62454f74b4d28c838
 content-type: application/json
 
 {
