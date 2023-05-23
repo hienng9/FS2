@@ -73,10 +73,15 @@ const initialBlogs = [
       password: "newuser987"
     }
   ]
+  const oneUser = {
+    username: "hnguyen",
+    password: "ngu123"
+  }
 
 module.exports = {
     blogsInDb,
     initialBlogs,
     usersInDb,
-    initialUsers
+    initialUsers,
+    oneUser
 }

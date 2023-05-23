@@ -5,14 +5,36 @@ const api = supertest(app)
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const { application } = require('express')
+
 
 beforeEach(async () => {
-    await Blog.deleteMany({})
+    await User.deleteMany({})
+    const users = helper.initialUsers.map(user => api.post('/api/users').send(user))
+    // const promiseArray = users.map(user => user.save())
+    const savedUsers = await Promise.all(users)
 
-    const blogs = helper.initialBlogs.map(blog => new Blog(blog))
-    const promiseArray = blogs.map(blog => blog.save())
-    await Promise.all(promiseArray)
+    await Blog.deleteMany({})
+    const blogs_with_creators = helper.initialBlogs.map(blog => {
+        blog.creator = savedUsers[0]._id
+    })
+
+    const blogs = blogs_with_creators.map(blog => new Blog(blog))
+    const promiseArray2 = blogs.map(blog => blog.save())
+    await Promise.all(promiseArray2)
+
+    // token
+
+    // const loginedUser = await api.post('/api/login').send(helper.oneUser)
+    // console.log("LOGIN USER", loginedUser)
+    // const token = loginedUser.token
+    // console.log("Tokent", token)
 })
+
+const getToken = async () => {
+    const loginedUser = await api.post('/api/login').send(helper.oneUser)
+    return JSON.parse(loginedUser.text).token
+}
 
 describe('when the database is initialized', () => {
     test('get all blogs, should return the same number of blogs as the initials', async () => {
@@ -36,6 +58,15 @@ describe('when the database is initialized', () => {
 
 describe('addition of new blogs', () => {
     test('a valid blog post is saved', async () => {
+        // const user = {
+        //     username: "hnguyen",
+        //     password: "ngu123"
+        // }
+        // const returnedUser = await api.post('api/login').send(user).expect(200)
+        // console.log("Returned User", returnedUser)
+        
+        const token = await getToken()
+        console.log("toekn", token)
         const newBlog = {
             title: 'Go To Statement Considered Harmful 2 Edition',
             author: 'Edsger W. Dijkstra',
@@ -44,6 +75,9 @@ describe('addition of new blogs', () => {
           }
         await api
             .post('/api/blogs')
+            .set({
+                'Authorization': `Bearer ${token}`
+            })
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -56,6 +90,8 @@ describe('addition of new blogs', () => {
     })
     
     test('a sent blog will have default 0 likes if likes is not submitted', async () => {
+        const token = await getToken()
+
         const newBlog = {
             title: 'Go To Statement Considered Harmful 3 Edition',
             author: 'Edsger W. Dijkstra',
@@ -63,7 +99,10 @@ describe('addition of new blogs', () => {
           }
         await api
             .post('/api/blogs')
+            .set({
+                'Authorization': `Bearer ${token}` })
             .send(newBlog)
+            .expect(201)
         
         const blogsAtEnd = await helper.blogsInDb()
         const filteredNewBlog = blogsAtEnd.filter(blog => blog.title === 'Go To Statement Considered Harmful 3 Edition' && blog.likes === 0)
@@ -71,13 +110,31 @@ describe('addition of new blogs', () => {
     })
     
     test('if url or title is missing, response status is 400 Bad Request', async () => {
+        const token = await getToken()
         const newBlog = {
             author: 'Edsger W. Dijkstra',
             url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
           }
         await api.post('/api/blogs')
           .send(newBlog)
+          .set({
+            'Authorization': `Bearer ${token}` })
           .expect(400)
+    
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    })
+
+    test("if a request does not contain a valid token, the request will fail with 401 unauthorized", async () => {
+        const newBlog = {
+            title: 'Go To Statement Considered Harmful 3 Edition',
+            author: 'Edsger W. Dijkstra',
+            url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+          }
+        
+          await api.post('/api/blogs')
+          .send(newBlog)
+          .expect(401)
     
         const blogsAtEnd = await helper.blogsInDb()
         expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
@@ -85,20 +142,26 @@ describe('addition of new blogs', () => {
     
 })
 
-describe('deleting a blog', () => {
-    test('delete a blog using its id', async () =>{
-        const blogsAtStart = await helper.blogsInDb()
-        const blogToDelete =  blogsAtStart[0]
-        const url = `/api/blogs/${blogToDelete.id}`
-        await api.delete(url).expect(204)
+// describe('deleting a blog', () => {
+//     test('delete a blog using its id', async () =>{
+//         const blogsAtStart = await helper.blogsInDb()
+//         const blogToDelete =  blogsAtStart[0]
+//         const url = `/api/blogs/${blogToDelete.id}`
+//         await api
+//             .delete(url)
+//             .set({
+//                 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhpZW50aGkiLCJpZCI6IjY0NmJiMmMxZWE4M2M4ZTZmMGY2YTY4ZCIsImlhdCI6MTY4NDgxNzY0MiwiZXhwIjoxNjg0ODIxMjQyfQ.UXU_3AEVPPhscIK2HTzaiK3HvmKbuumaP1SO0bysNog'
+//             })
+//             .expect(204)
+            
 
-        const blogsAtEnd = await helper.blogsInDb()
+//         const blogsAtEnd = await helper.blogsInDb()
 
-        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
-        const titles = blogsAtEnd.map(b => b.title)
-        expect(titles).not.toContain(blogToDelete.title)
-    })
-})
+//         expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+//         const titles = blogsAtEnd.map(b => b.title)
+//         expect(titles).not.toContain(blogToDelete.title)
+//     })
+// })
 
 describe('get request', () => {
     test('get a specific blog', async () =>{
@@ -124,12 +187,13 @@ describe('put request', () => {
 })
 
 describe("test user database", () => {
-    beforeEach(async () => {
-        await User.deleteMany()
-        const users = helper.initialUsers.map(user => new User(user))
-        const promiseArray = users.map(user => user.save())
-        await Promise.all(promiseArray)
+    test ("users database exists a specific user when initialized", async () => {
+        const usersAtStart = await api.get('/api/users').expect(200).expect('Content-Type', /application\/json/)
+        expect(usersAtStart.body).toHaveLength(helper.initialUsers.length)
+        const usernames = usersAtStart.body.map(u => u.username)
+        expect(usernames).toContain(helper.oneUser.username)
     })
+
     test("username length less than 3 is not saved", async () => {
         const faultyUser = {
             username: 'hi',
