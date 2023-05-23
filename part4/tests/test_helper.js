@@ -52,6 +52,11 @@ const initialBlogs = [
   ]
 
   const blogsInDb = async () => {
+    const blogs = await Blog.find({}).populate('creator', {username: 1, name: 1, id: 1})
+    return blogs.map(b => b.toJSON())
+  }
+
+  const blogsDbNoPopulate = async () => {
     const blogs = await Blog.find({})
     return blogs.map(b => b.toJSON())
   }
@@ -60,7 +65,11 @@ const initialBlogs = [
     const users = await User.find({})
     return users.map(u => u.toJSON())
   }
-
+   
+  const oneUserInDb = async (username) => {
+    const user = await User.find({username: username})
+    return user.map(u => u.toJSON())
+  }
   const initialUsers = [
     {
       username: "hnguyen",
@@ -80,8 +89,9 @@ const initialBlogs = [
 
 module.exports = {
     blogsInDb,
+    blogsDbNoPopulate,
     initialBlogs,
     usersInDb,
     initialUsers,
-    oneUser
+    oneUser, oneUserInDb
 }

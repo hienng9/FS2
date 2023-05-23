@@ -1,15 +1,28 @@
 POST http://localhost:3003/api/blogs
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhpZW50aGkiLCJpZCI6IjY0NmJiMmMxZWE4M2M4ZTZmMGY2YTY4ZCIsImlhdCI6MTY4NDc4MjI2MSwiZXhwIjoxNjg0Nzg1ODYxfQ.6wkZ2N4D53DFmMGtfvq0bWj9MXkZoOM6LLZMMf020L8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhpZW50aGkiLCJpZCI6IjY0NmJiMmMxZWE4M2M4ZTZmMGY2YTY4ZCIsImlhdCI6MTY4NDgyMDIzNywiZXhwIjoxNjg0ODIzODM3fQ.8nDsY6M85cHOkqYUf4F8IBqjncDYqZC1JYbqBH7gBFg
 
 {
-    "title": "It is time to learn React Node and more",
+    "title": "It is time to learn React Node and more2",
     "author": "FullStackOpen",
     "url": "fullstackopen.com",
     "likes": 53830
 }
 
+### 
+PUT http://localhost:3003/api/blogs
+content-type: application/json
 
+{
+    "title": "ChatGPT is taking over the world",
+    "author": "OpenAI",
+    "url": "openAI.com",
+    "likes": 5030,
+    "creator": "646b9fce6d298d91e47c9cb6",
+    "id": "646badb62454f74b4d28c838"
+}
+
+#CREATE USER
 ###
 POST http://localhost:3003/api/users
 Content-Type: application/json
@@ -21,6 +34,7 @@ Content-Type: application/json
 
 }
 
+#LOGIN
 ###
 POST http://localhost:3003/api/login 
 Content-Type: application/json

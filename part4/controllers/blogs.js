@@ -10,7 +10,7 @@ blogsRouter.get('/', async (request, response) => {
   })
 
 blogsRouter.get('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.params.id)
+  const blog = await Blog.findById(request.params.id).populate('creator', {username: 1, name: 1, id: 1})
   if (blog) {
     response.json(blog)
   }
@@ -21,17 +21,19 @@ blogsRouter.get('/:id', async (request, response) => {
   
 blogsRouter.put('/:id', async (request, response) => {
   const newBlog = request.body
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, newBlog, {new: true})
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id.toString(), newBlog, {new: true})
   response.json(updatedBlog)
+
   
 })
 blogsRouter.delete('/:id', async(request, response) => {
-  const decodedToken = jwt.verify(request.token, `${process.env.SECRET}`)
   const user = request.user
   const blogToDelete = await Blog.findById(request.params.id)
-  if (blogToDelete.creator.toString() === decodedToken.id.toString()) {
+
+  if (blogToDelete.creator.toString() === user._id.toString()) {
     await Blog.findByIdAndRemove(request.params.id)
     user.blogs = user.blogs.filter(b => b.id !== blogToDelete.id)
+    await user.save()
     response.status(204).end()
   } else {
     response.status(401).json({error: "Only creator can delete"})

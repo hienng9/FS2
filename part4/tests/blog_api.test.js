@@ -5,21 +5,18 @@ const api = supertest(app)
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
 const User = require('../models/user')
-const { application } = require('express')
 
 
 beforeEach(async () => {
     await User.deleteMany({})
     const users = helper.initialUsers.map(user => api.post('/api/users').send(user))
     // const promiseArray = users.map(user => user.save())
-    const savedUsers = await Promise.all(users)
+    await Promise.all(users)
 
+    const user = await helper.oneUserInDb(helper.oneUser.username)
     await Blog.deleteMany({})
-    const blogs_with_creators = helper.initialBlogs.map(blog => {
-        blog.creator = savedUsers[0]._id
-    })
-
-    const blogs = blogs_with_creators.map(blog => new Blog(blog))
+    helper.initialBlogs.map(blog =>  blog.creator = user[0].id)
+    const blogs = helper.initialBlogs.map(blog => new Blog(blog))
     const promiseArray2 = blogs.map(blog => blog.save())
     await Promise.all(promiseArray2)
 
@@ -66,7 +63,6 @@ describe('addition of new blogs', () => {
         // console.log("Returned User", returnedUser)
         
         const token = await getToken()
-        console.log("toekn", token)
         const newBlog = {
             title: 'Go To Statement Considered Harmful 2 Edition',
             author: 'Edsger W. Dijkstra',
@@ -142,33 +138,34 @@ describe('addition of new blogs', () => {
     
 })
 
-// describe('deleting a blog', () => {
-//     test('delete a blog using its id', async () =>{
-//         const blogsAtStart = await helper.blogsInDb()
-//         const blogToDelete =  blogsAtStart[0]
-//         const url = `/api/blogs/${blogToDelete.id}`
-//         await api
-//             .delete(url)
-//             .set({
-//                 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhpZW50aGkiLCJpZCI6IjY0NmJiMmMxZWE4M2M4ZTZmMGY2YTY4ZCIsImlhdCI6MTY4NDgxNzY0MiwiZXhwIjoxNjg0ODIxMjQyfQ.UXU_3AEVPPhscIK2HTzaiK3HvmKbuumaP1SO0bysNog'
-//             })
-//             .expect(204)
+describe('deleting a blog', () => {
+    test('delete a blog using its id', async () =>{
+        const blogsAtStart = await helper.blogsInDb()
+        
+        const blogToDelete =  blogsAtStart[0]
+        const url = `/api/blogs/${blogToDelete.id}`
+
+        const token = await getToken()
+        await api
+            .delete(url)
+            .set({
+                'Authorization': `Bearer ${token}` })
+            .expect(204)
             
 
-//         const blogsAtEnd = await helper.blogsInDb()
+        const blogsAtEnd = await helper.blogsInDb()
 
-//         expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
-//         const titles = blogsAtEnd.map(b => b.title)
-//         expect(titles).not.toContain(blogToDelete.title)
-//     })
-// })
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+        const titles = blogsAtEnd.map(b => b.title)
+        expect(titles).not.toContain(blogToDelete.title)
+    })
+})
 
 describe('get request', () => {
     test('get a specific blog', async () =>{
         const blogsAtStart = await helper.blogsInDb()
         const blogToView = blogsAtStart[0]
         const blog = await api.get(`/api/blogs/${blogToView.id}`).expect(200).expect('Content-Type', /application\/json/)
-        
         expect(blog.body).toEqual(blogToView)
     
     })
@@ -176,11 +173,11 @@ describe('get request', () => {
 
 describe('put request', () => {
     test('updated likes of a blog', async () => {
-        const blogsAtStart = await helper.blogsInDb()
+        const blogsAtStart = await helper.blogsDbNoPopulate()
         const blog = blogsAtStart[0]
         const blogToUpdate = {...blog, likes: 40}
-        const updatedBlog = await api.put(`/api/blogs/${blogToUpdate.id}`).send(blogToUpdate)
-        const blogsAtEnd = await helper.blogsInDb()
+        const saveblog = await api.put(`/api/blogs/${blog.id}`).send(blogToUpdate)
+        const blogsAtEnd = await helper.blogsDbNoPopulate()
         const filteredBlog = blogsAtEnd.filter(b => b.id === blogToUpdate.id && b.likes == blogToUpdate.likes )
         expect(filteredBlog).toHaveLength(1)
     })
@@ -222,7 +219,7 @@ describe("test user database", () => {
             name: "Hien",
             password: "hi2345"
         }
-        const saveUser = await api.post('/api/users').send(rightUser).expect(201).expect('Content-Type', /application\/json/)
+        await api.post('/api/users').send(rightUser).expect(201).expect('Content-Type', /application\/json/)
 
         const usersAtEnd = await helper.usersInDb()
         expect(usersAtEnd).toHaveLength(helper.initialUsers.length + 1)
