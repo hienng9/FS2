@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
@@ -6,20 +6,19 @@ import Name from  './components/Persons';
 import Notification from './components/Notification';
 import personService from './services/person';
 import loginService from './services/login'
+import LoginForm from './components/LoginForm';
+import Togglable from './components/Togglable';
+
 
 
 const App = () => {
   
   const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
   const [alertMessage, setAlertMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
+  const personFormRef = useRef()
   
   const hook = () => {
     personService
@@ -56,13 +55,10 @@ const App = () => {
     })
   }
 
-  const addName = (event) => {
-    event.preventDefault()
-    const nameObject = {
-      name: newName,
-      number: newNumber
-    }
-    
+  const addPerson = (personObject) => {
+    personFormRef.current.toggleVisibility()
+    const newName = personObject.name
+    const newNumber =  personObject.number
     const isIn = persons.map(person => person.name).includes(newName)
     const phoneExists = persons.map(person => person.number).includes(newNumber)
     isIn 
@@ -72,7 +68,7 @@ const App = () => {
         ? updatePerson({newName, newNumber})
         : setPersons(persons)
     : personService
-        .create(nameObject)
+        .create(personObject)
         .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
         .then(() => {
           setAlertMessage(`Added ${newName}`)
@@ -86,8 +82,6 @@ const App = () => {
           setErrorMessage(null)
         }, 5000)
       })
-    setNewName('')
-    setNewNumber('')
   }
 
   const deletePerson = (id) =>{
@@ -99,12 +93,6 @@ const App = () => {
       : setPersons(persons)
     }
     
-  const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
-  const handleNumberChage = (event) => {
-    setNewNumber(event.target.value)
-  }
   const handleNewSearch = (event) => {
     setNewSearch(event.target.value)
   }
@@ -113,15 +101,15 @@ const App = () => {
   ? persons
   : persons.filter(person => person.name.toLowerCase().includes(newSearch))
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const loginUser = async (userObject) => {
+    
     try {
+      const username = userObject.username
+      const password = userObject.password
       const loggedInUser = await loginService.login({username, password})
       window.localStorage.setItem('loggedUser', JSON.stringify(loggedInUser))
       personService.setToken(loggedInUser.token)
       setUser(loggedInUser)
-      setUsername('')
-      setPassword('')
     }
     catch (exception) {
       setErrorMessage('Wrong credentials')
@@ -130,59 +118,43 @@ const App = () => {
       }, 5000)
     }
   }
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type="text"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-  )
 
-  const phonebookForm = () => (
-    <React.Fragment>
-      <Filter search={newSearch} handleSearch={handleNewSearch} />
-      <h2>Add new contact</h2>
-      <PersonForm 
-        newName={newName} 
-        newNumber={newNumber} 
-        handleName={handleNameChange} 
-        handleNumber={handleNumberChage}
-        addName={addName}
-      />
-      <h2>Numbers</h2>
-      {personsToShow.map(
-        person => 
-        <Name key={person.id} person={person} deleteClick={()=>deletePerson(person.id)}/>
-        )}
-    </React.Fragment>
-  )
+  const handleLogOut = () => {
+    window.localStorage.removeItem('loggedUser')
+    setUser(null)
+  }
   return (
     <div>
       <h2>Phonebook</h2>
       <Notification message={alertMessage} nameClass="success" />
       <Notification message={errorMessage} nameClass="error" />
-
-      {!user && loginForm()}
-      {user && <div>
-        <p>{user.name} logged in</p>
-        {phonebookForm()}
-        </div>
+     
+      {!user &&
+        <Togglable buttonLabel="log in">
+        <LoginForm
+              loginFunc={loginUser}
+            />
+      </Togglable>}
+      {user &&
+            <div>
+              Hello, {user.name} 
+              <button onClick={handleLogOut}>logout</button>
+              <React.Fragment>
+              <Filter search={newSearch} handleSearch={handleNewSearch} />
+              <h2>Add new contact</h2>
+              <Togglable buttonLabel="new contact" ref={ personFormRef }>
+                <PersonForm 
+                  createPerson={addPerson}
+                />
+              </Togglable>
+              <h2>Numbers</h2>
+              {personsToShow.map(
+                person => 
+                <Name key={person.id} person={person} deleteClick={()=>deletePerson(person.id)}/>
+                )}
+            </React.Fragment>
+          </div>
+        
       }
       
       

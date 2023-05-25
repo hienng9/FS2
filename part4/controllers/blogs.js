@@ -5,12 +5,12 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/', async (request, response) => {
-    const blogs = await Blog.find({}).populate('creator', {username: 1, name: 1, id: 1})
+    const blogs = await Blog.find({ creator: { $ne: null }})//.populate('creator', {username: 1, name: 1, id: 1})
     response.json(blogs)
   })
 
 blogsRouter.get('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.params.id).populate('creator', {username: 1, name: 1, id: 1})
+  const blog = await Blog.findById(request.params.id)//.populate('creator', {username: 1, name: 1, id: 1})
   if (blog) {
     response.json(blog)
   }
@@ -21,7 +21,7 @@ blogsRouter.get('/:id', async (request, response) => {
   
 blogsRouter.put('/:id', async (request, response) => {
   const newBlog = request.body
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id.toString(), newBlog, {new: true})
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, newBlog, {new: true})
   response.json(updatedBlog)
 
   
@@ -29,29 +29,18 @@ blogsRouter.put('/:id', async (request, response) => {
 blogsRouter.delete('/:id', async(request, response) => {
   const user = request.user
   const blogToDelete = await Blog.findById(request.params.id)
+  try {
+    if (blogToDelete.creator.toString() === user.id.toString()) {
+      await Blog.findByIdAndRemove(request.params.id)
+      user.blogs = user.blogs.filter(b => b.id !== blogToDelete.id)
+      await user.save()
+      response.status(204).end()
+    } }
+    catch (error) {
+      response.status(401).json({error: error})
+    }
 
-  if (blogToDelete.creator.toString() === user._id.toString()) {
-    await Blog.findByIdAndRemove(request.params.id)
-    user.blogs = user.blogs.filter(b => b.id !== blogToDelete.id)
-    await user.save()
-    response.status(204).end()
-  } else {
-    response.status(401).json({error: "Only creator can delete"})
-  }
-  // await Blog.findByIdAndRemove(request.params.id)
-
-  // response.status(204).end()
-
-})
-
-// const getTokenFrom = (request) => {
-//   const authorization = request.get('Authorization')
-//   if (authorization && authorization.startsWith('Bearer ')) {
-//     return authorization.replace('Bearer ', '')
-//   } else {
-//   return null
-//   }
-// }
+  })
 
 blogsRouter.post('/', async (request, response) => {
     const body = request.body

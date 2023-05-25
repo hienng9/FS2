@@ -25,6 +25,8 @@ const errorHandler = (error, request, response, next) => {
     return response.status(401).json({ error: error.message })
   } else if (error.name === 'TokenExpireddError') {
     return response.status(401).json({ error: 'token expired' })
+  } else if (error.name == 'TypeError') {
+    return response.status(400).json({ error: error.message})
   }
 
   next(error)
@@ -39,11 +41,14 @@ const tokenExtractor = (request, response, next) => {
 }
   
 const userExtractor = async (request, response, next) => {
+  console.log("Token", request.token)
   if (request.token) {
     const decodedToken = jwt.verify(request.token, `${process.env.SECRET}`)
     if (decodedToken.id) {
+      
       const user = await User.findById(decodedToken.id)
       request.user = user
+
     }} 
   next()
 }

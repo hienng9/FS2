@@ -13,12 +13,29 @@ const getAll = () => {
 
 const create = async newBlog => {
   const config = {
-    headers: {Authorization: token}
+    headers: { Authorization: token }
   }
   const response = axios.post(baseUrl, newBlog, config)
   return response.then(res => {return res.data})
 
 }
+const updateLikes = async newBlog => {
+  // const config = {
+  //   headers: {Authorization: token}
+  // }
+  const response = axios.put(`${baseUrl}/${newBlog.id}`, newBlog)
+  return response.then(res => {return res.data})
+}
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, create , setToken}
+const deleteBlog = async blog => {
+  const config = {
+    headers: { Authorization: token }
+  }
+  const response = axios.delete(`${baseUrl}/${blog.id}`,config)
+  return response.then(res => {return res.data})
+
+}
+
+
+// eslint-disable-next-line
+export default { getAll, create , setToken, updateLikes, deleteBlog }
