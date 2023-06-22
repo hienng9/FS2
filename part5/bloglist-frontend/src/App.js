@@ -7,9 +7,9 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 
-
-
 const App = () => {
+
+
   const blogFormRef = useRef()
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')

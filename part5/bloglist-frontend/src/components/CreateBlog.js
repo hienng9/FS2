@@ -20,15 +20,27 @@ const BlogCreate = ({ handleCreateBlogF }) => {
   return (
     <form onSubmit={createBlog}>
       <div>
-          title: <input type="text" value={newTitle} onChange={({ target }) => setNewTittle(target.value)}/>
+          title: <input
+          type="text"
+          value={newTitle}
+          onChange={({ target }) => setNewTittle(target.value)}
+          placeholder='write blog title here'/>
       </div>
 
       <div>
-          author: <input type="text" value={newAuthor} onChange={({ target }) => setNewAuthor(target.value)}/>
+          author: <input
+          type="text"
+          value={newAuthor}
+          onChange={({ target }) => setNewAuthor(target.value)}
+          placeholder='write blog author here'/>
       </div>
 
       <div>
-          url: <input type="text" value={newUrl} onChange={({ target }) => setNewUrl(target.value)}/>
+          url: <input
+          type="text"
+          value={newUrl}
+          onChange={({ target }) => setNewUrl(target.value)}
+          placeholder='write url here'/>
       </div>
 
       <button type="submit">create</button>
