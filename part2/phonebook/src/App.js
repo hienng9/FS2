@@ -148,7 +148,7 @@ const App = () => {
                 />
               </Togglable>
               <h2>Numbers</h2>
-              {personsToShow.map(
+              {personsToShow.forEach(
                 person => 
                 <Name key={person.id} person={person} deleteClick={()=>deletePerson(person.id)}/>
                 )}
