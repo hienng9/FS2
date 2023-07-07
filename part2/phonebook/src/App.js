@@ -8,8 +8,26 @@ import personService from './services/person';
 import loginService from './services/login'
 import LoginForm from './components/LoginForm';
 import Togglable from './components/Togglable';
+import { legacy_createStore as createStore } from 'redux'
+import phonebookReducer from './reducers/phonebookReducer';
 
+const store = createStore(phonebookReducer)
 
+store.dispatch({
+  type: 'NEW_PERSON',
+  payload: {
+    name: 'person1',
+    number: '032-347832'
+  }
+})
+
+store.dispatch({
+  type: 'NEW_PERSON',
+  payload: {
+    name: 'person2',
+    number: '032-347833'
+  }
+})
 
 const App = () => {
   
@@ -98,8 +116,8 @@ const App = () => {
   }
   
   const personsToShow = (newSearch==="")
-  ? persons
-  : persons.filter(person => person.name.toLowerCase().includes(newSearch))
+  ? store.getState()
+  : store.getState().filter(person => person.name.toLowerCase().includes(newSearch))
 
   const loginUser = async (userObject) => {
     
@@ -148,7 +166,7 @@ const App = () => {
                 />
               </Togglable>
               <h2>Numbers</h2>
-              {personsToShow.forEach(
+              {personsToShow.map(
                 person => 
                 <Name key={person.id} person={person} deleteClick={()=>deletePerson(person.id)}/>
                 )}
