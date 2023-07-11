@@ -1,26 +1,24 @@
-// import { useSelector } from "react-redux"
-import { useEffect } from "react"
 import { useNotificationDispatch, useNotificationValue } from "../NotificationContext"
-
-
-
+import { useEffect } from 'react'
 const Notification = () => {
   const notification = useNotificationValue()
   const notificationDispatch = useNotificationDispatch()
   const style = {
     border: 'solid',
     padding: 10,
-    borderWidth: 1
+    borderWidth: 1,
+    marginBottom: 5
   }
   useEffect(() => {
     if (!notification) {
-      setTimeout(() => {notificationDispatch({ type: 'REMOVE' })}, 5000)
+      setTimeout(() => notificationDispatch({type: 'REMOVE'}), 5000)
     }
-  }, [notification])
+  },[notificationDispatch, notification])
+  
 
   return (
-    <div style={notification === '' ? {display:'none'} : style}>
-      { notification }
+    <div style={style}>
+      {notification}
     </div>
   )
 }
