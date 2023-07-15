@@ -18,7 +18,7 @@ describe('Blog App', function() {
     cy.visit('')
   })
 
-  
+
   it('Login form is shown', function() {
     cy.contains('username')
     cy.contains('password')
@@ -27,18 +27,18 @@ describe('Blog App', function() {
 
   describe('Login', function() {
     it('succeeds with correct credentials', function() {
-    
+
       cy.get('#username').type('hienthi')
       cy.get('#password').type('hieng135')
       cy.get('#login-button').click()
       cy.contains('Hello, hienthi')
     })
-  
+
     it('fails with wrong credentials', function() {
       cy.get('#username').type('hienthi')
       cy.get('#password').type('abcs123')
       cy.get('#login-button').click()
-      
+
       cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')
       cy.contains('Wrong username or password')
       cy.get('html').should('not.contain', 'hienthi')
@@ -47,8 +47,8 @@ describe('Blog App', function() {
 
   describe('When logged in', function() {
     beforeEach(function() {
-      cy.login({username: 'hienthi', password: 'hieng135'})
-      cy.createBlog({title: 'How would it be?', author: 'Ala', url:'alibaba.com'})
+      cy.login({ username: 'hienthi', password: 'hieng135' })
+      cy.createBlog({ title: 'How would it be?', author: 'Ala', url:'alibaba.com' })
       cy.contains('How would it be?').contains('show').click()
     })
 
@@ -58,7 +58,7 @@ describe('Blog App', function() {
       cy.get('#author').type('test author')
       cy.get('#url').type('abc.com')
       cy.get('#create-button').click()
-  
+
       cy.contains('A test title by test author')
     })
 
@@ -76,19 +76,19 @@ describe('Blog App', function() {
 
     it('blog cannot be deleted if not creator/ only creator can see remove button', function() {
       cy.contains('logout').click()
-      cy.login({username: 'luongng', password:'nguyen'})
+      cy.login({ username: 'luongng', password:'nguyen' })
       cy.contains('How would it be?').contains('show').click()
       cy.contains('remove').should('have.css', 'display', 'none')
     })
 
     it.only('blogs are ordered according to likes descendingly', function () {
-      cy.createBlog({title: 'another blog with more likes', author: 'author2', url: 'whoknows.com', likes: 123})
+      cy.createBlog({ title: 'another blog with more likes', author: 'author2', url: 'whoknows.com', likes: 123 })
       cy.contains('another blog with more likes').contains('show').click()
       cy.contains('another blog with more likes').contains('like').click().as('clickLike')
       cy.wait(5000)
       cy.get('.details').eq(0).should('contain', 'another blog with more likes')
       cy.get('.details').eq(1).should('contain', 'How would it be?')
-      
+
     })
   })
 
