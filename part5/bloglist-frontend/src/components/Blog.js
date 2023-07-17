@@ -55,7 +55,7 @@ const Blog = ({ blogs }) => {
     <div style={blogStyle} className="details">
       <h2>{blog.title}</h2>
       <div className="blogUrl">
-        <a href={blog.url}>{blog.url}</a>
+        <Link to={blog.url}>{blog.url}</Link>
       </div>
       <div>
         {blog.likes} likes
