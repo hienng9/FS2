@@ -9,9 +9,10 @@ const notificationSlice = createSlice({
       return { className: "success", message: action.payload }
     },
     createErrorNotification(state, action) {
+      console.log(action)
       return { className: "error", message: action.payload }
     },
-    removeNotification() {
+    removeNotification(state, action) {
       return initialState
     },
   },
@@ -23,18 +24,18 @@ export const {
   removeNotification,
 } = notificationSlice.actions
 
-// export const createAndRemoveSuccess = (message) => {
-//   return async (dispatch) => {
-//     dispatch(createSuccessNotification(message))
-//     setTimeout(dispatch(createSuccessNotification(null)), 5000)
-//   }
-// }
+export const createAndRemoveSuccess = (message) => {
+  return async (dispatch) => {
+    dispatch(createSuccessNotification(message))
+    setTimeout(() => dispatch(removeNotification()), 5000)
+  }
+}
 
-// export const createAndRemoveError = (message) => {
-//   return async (dispatch) => {
-//     dispatch(createErrorNotification(message))
-//     setTimeout(dispatch(createErrorNotification(null)), 5000)
-//   }
-// }
+export const createAndRemoveError = (message) => {
+  return async (dispatch) => {
+    dispatch(createErrorNotification(message))
+    setTimeout(() => dispatch(removeNotification()), 5000)
+  }
+}
 
 export default notificationSlice.reducer
