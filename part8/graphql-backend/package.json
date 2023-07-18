@@ -1,0 +1,15 @@
+{
+  "name": "graphql-backend",
+  "version": "1.0.0",
+  "description": "Persons backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hien Nguyen",
+  "license": "MIT",
+  "dependencies": {
+    "@apollo/server": "^4.7.5",
+    "graphql": "^16.7.1"
+  }
+}
