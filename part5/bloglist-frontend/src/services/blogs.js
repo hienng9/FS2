@@ -36,5 +36,19 @@ const deleteBlog = async (blog) => {
   return response.data
 }
 
+const createComment = async ({ blogId, content }) => {
+  const newComent = { content }
+  console.log("newcoment", newComent)
+  const response = await axios.post(`${baseUrl}/${blogId}/comments`, newComent)
+  return response.data
+}
+
 // eslint-disable-next-line
-export default { getAll, create, setToken, updateLikes, deleteBlog }
+export default {
+  getAll,
+  create,
+  setToken,
+  updateLikes,
+  deleteBlog,
+  createComment,
+}

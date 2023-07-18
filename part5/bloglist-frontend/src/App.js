@@ -12,7 +12,14 @@ import Blog from "./components/Blog"
 import { useDispatch, useSelector } from "react-redux"
 import { intializeBlogs } from "./reducers/blogsReducer"
 import { initialUsers } from "./reducers/usersReducer"
-
+import {
+  AppBar,
+  Container,
+  Box,
+  Toolbar,
+  MenuItem,
+  Typography,
+} from "@mui/material"
 const App = () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
@@ -24,37 +31,38 @@ const App = () => {
   }, [dispatch])
 
   const padding = { padding: 5 }
-  const style = {
-    backgroundColor: "grey",
-    borderStyle: "hidden",
-  }
+
   return (
-    <div>
+    <Container>
       <h2>blogs</h2>
       <Notification />
 
       {user === null ? (
         <LoginForm />
       ) : (
-        <div>
-          <div className="container" style={style}>
-            <Link style={padding} to="/">
-              blogs
-            </Link>
-            <Link style={padding} to="users">
-              users
-            </Link>
-            <UsernameAppearance />
-          </div>
+        <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="static">
+            <Container>
+              <Toolbar>
+                <Link style={{ textDecoration: "none" }} to="/">
+                  <MenuItem>BLOGS</MenuItem>
+                </Link>
+                <Link style={{ textDecoration: "none" }} to="users">
+                  <MenuItem>USERS</MenuItem>
+                </Link>
+                <UsernameAppearance />
+              </Toolbar>
+            </Container>
+          </AppBar>
           <Routes>
+            <Route path="/blogs/:id" element={<Blog />} />
             <Route path="/users/:id" element={<User users={users} />} />
-            <Route path="/blogs/:id" element={<Blog blogs={blogs} />} />
             <Route path="/" element={<Blogs blogs={blogs} />} />
             <Route path="/users" element={<Users users={users} />} />
           </Routes>
-        </div>
+        </Box>
       )}
-    </div>
+    </Container>
   )
 }
 

@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux"
 import { loginUser, logout } from "../reducers/userReducer"
 import { useState } from "react"
-import { createErrorNotification } from "../reducers/notificationReducer"
+import { TextField, Button } from "@mui/material"
 
 const useField = ({ type, name }) => {
   const [value, setValue] = useState("")
@@ -38,25 +38,36 @@ const LoginForm = () => {
     }, 3600000)
     usernameReset()
     passwordReset()
-    // } catch (error) {
-    //   console.log("error", error.response.data.error)
-    //   dispatch(createErrorNotification("Wrong username or password"))
-    // }
   }
   return (
     <form onSubmit={handleLogin}>
       <div>
-        username
-        <input {...username} />
+        <TextField
+          required
+          id="username"
+          label="Username"
+          variant="standard"
+          {...username}
+        />
       </div>
       <div>
-        password
-        <input {...password} />
+        <TextField
+          required
+          id="password"
+          label="Password"
+          variant="standard"
+          {...password}
+        />
       </div>
       <div>
-        <button id="login-button" type="submit">
+        <Button
+          color="primary"
+          variant="contained"
+          id="login-button"
+          type="submit"
+        >
           login
-        </button>
+        </Button>
       </div>
     </form>
   )

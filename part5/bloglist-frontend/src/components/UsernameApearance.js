@@ -1,7 +1,7 @@
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { logout } from "../reducers/userReducer"
-
+import { Box, Button, Menu } from "@mui/material"
 const UsernameAppearance = () => {
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
@@ -10,10 +10,12 @@ const UsernameAppearance = () => {
     window.localStorage.removeItem("loggedInUser")
   }
   return (
-    <React.Fragment>
-      Hello, {user.username}
-      <button onClick={handleLogout}>logout</button>
-    </React.Fragment>
+    <Box aligh="right" sx={{ display: { xs: "none", sm: "block" } }}>
+      <strong>Hello, {user.username} </strong>
+      <Button color="inherit" onClick={handleLogout}>
+        <strong>LOGOUT</strong>
+      </Button>
+    </Box>
   )
 }
 

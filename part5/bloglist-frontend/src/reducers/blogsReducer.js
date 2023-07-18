@@ -55,4 +55,13 @@ export const addLikes = (newBlog) => {
     dispatch(changeContent(newBlog))
   }
 }
+
+export const addComment = ({ blogId, content }) => {
+  console.log("id reducer", blogId, content)
+  return async (dispatch) => {
+    await blogService.createComment({ blogId, content })
+    const updatedBlogs = await blogService.getAll()
+    dispatch(setBlogs(updatedBlogs))
+  }
+}
 export default blogSlice.reducer

@@ -1,12 +1,12 @@
 POST http://localhost:3003/api/blogs
 content-type: application/json
-Authorization: Bearer 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IklsdmVVIiwiaWQiOiI2NGI1MTgwMDJiMThhNWEzMDRmZWU4NjYiLCJpYXQiOjE2ODk1OTA2NDcsImV4cCI6MTY4OTU5NDI0N30.sgzxXv0Qv4cLz4dieB7WXfge2Llq25VwvGtXlg5NMTg
 
 {
-    "title": "It is time to learn React Node and more2",
-    "author": "FullStackOpen",
-    "url": "fullstackopen.com",
-    "likes": 53830
+    "title": "Thing I did not know before",
+    "author": "Hien Nguyen",
+    "url": "google.com",
+    "likes": 65436
 }
 
 ### 
@@ -34,13 +34,32 @@ Content-Type: application/json
 
 }
 
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "IlveU",
+    "name": "I And Your",
+    "password": "hahah123"
+
+}
+
 #LOGIN
 ###
 POST http://localhost:3003/api/login 
 Content-Type: application/json
 
 {
-    "username": "hienthi",
-    "password": "hieng134"
+    "username": "IlveU",
+    "password": "hahah123"
 }
 
+###
+POST http://localhost:3003/api/blogs/64b51b29c1f0f366013f50c8/comments
+Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhpZW50aGkiLCJpZCI6IjY0NmJiMmMxZWE4M2M4ZTZmMGY2YTY4ZCIsImlhdCI6MTY4OTU4NzY1NiwiZXhwIjoxNjg5NTkxMjU2fQ.wukDc_cNf-I_Gh3g8uGZ7NNtHgSHROTAzZmUuc41W_s
+
+{
+    "content": "These are the best"
+}
