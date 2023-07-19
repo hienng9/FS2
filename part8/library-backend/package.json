@@ -1,7 +1,7 @@
 {
-  "name": "graphql-backend",
+  "name": "library-backend",
   "version": "1.0.0",
-  "description": "Persons backend",
+  "description": "Back end for Library App",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +13,7 @@
     "dotenv": "^16.3.1",
     "graphql": "^16.7.1",
     "jsonwebtoken": "^9.0.1",
-    "mongoose": "^7.4.0"
+    "mongoose": "^7.4.0",
+    "uuid": "^9.0.0"
   }
 }
