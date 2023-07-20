@@ -1,12 +1,25 @@
-import { EDIT_AUTHOR, ALL_AUTHORS, ALL_BOOKS } from "../queries"
+import { EDIT_AUTHOR, ALL_AUTHORS } from "../queries"
 import { useMutation } from "@apollo/client"
 import { useState } from "react"
 
-const YearForm = ({ authors }) => {
+const YearForm = ({ authors, setError }) => {
   const [setBornTo, setBornToYear] = useState("")
   const [name, setName] = useState("")
   const [updateYear] = useMutation(EDIT_AUTHOR, {
-    refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }],
+    onError: (error) => {
+      const message = error.graphQLErrors[0].message
+      setError(message)
+    },
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
+        const updatedAuthor = response.data.editAuthor
+        return {
+          allAuthors: allAuthors.map((author) =>
+            author.name === updatedAuthor.name ? updatedAuthor : author
+          ),
+        }
+      })
+    },
   })
 
   const handleUpdateBorn = (event) => {

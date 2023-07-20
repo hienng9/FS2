@@ -190,8 +190,10 @@ const resolvers = {
 
     allAuthors: async () => Author.find({}),
 
-    me: async (context) => {
-      return context.currentUser
+    me: async (root, args, context) => {
+      const currentUser = context.currentUser
+      console.log("current", currentUser)
+      return currentUser
     },
   },
 
@@ -249,7 +251,6 @@ const resolvers = {
 
     editAuthor: async (root, args, context) => {
       const currentUser = context.currentUser
-      console.log("current", currentUser)
       if (!currentUser) {
         throw new GraphQLError("Not authenticated", {
           extensions: {

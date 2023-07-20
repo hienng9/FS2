@@ -8,10 +8,17 @@ const PersonForm = ({ setError }) => {
   const [streetReset, street] = useField("text")
   const [cityReset, city] = useField("text")
   const [createPerson] = useMutation(CREATE_PERSON, {
-    refetchQueries: [{ query: ALL_PERSONS }],
     onError: (error) => {
+      console.log("error", error)
       const message = error.graphQLErrors[0].message
       setError(message)
+    },
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_PERSONS }, ({ allPersons }) => {
+        return {
+          allPersons: allPersons.concat(response.data.addPerson),
+        }
+      })
     },
   })
   const handleCreatePerson = (event) => {
@@ -20,7 +27,7 @@ const PersonForm = ({ setError }) => {
     createPerson({
       variables: {
         name: name.value,
-        phone: phone.value,
+        phone: phone.value.length > 0 ? phone.value : undefined,
         street: street.value,
         city: city.value,
       },

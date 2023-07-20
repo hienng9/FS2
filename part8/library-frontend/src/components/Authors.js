@@ -1,5 +1,5 @@
 import YearForm from "./YearForm"
-const Authors = ({ authors }) => {
+const Authors = ({ authors, setError }) => {
   return (
     <div>
       <h2>authors</h2>
@@ -20,7 +20,7 @@ const Authors = ({ authors }) => {
         </tbody>
       </table>
       <h2>Set BirthYear</h2>
-      <YearForm authors={authors} />
+      <YearForm authors={authors} setError={setError} />
     </div>
   )
 }

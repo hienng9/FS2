@@ -8,7 +8,6 @@ const schema = mongoose.Schema({
   },
   published: {
     type: Number,
-    minlength: 4,
     required: true,
   },
   author: {

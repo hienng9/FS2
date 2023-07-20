@@ -12,14 +12,7 @@ import Blog from "./components/Blog"
 import { useDispatch, useSelector } from "react-redux"
 import { intializeBlogs } from "./reducers/blogsReducer"
 import { initialUsers } from "./reducers/usersReducer"
-import {
-  AppBar,
-  Container,
-  Box,
-  Toolbar,
-  MenuItem,
-  Typography,
-} from "@mui/material"
+import { AppBar, Container, Box, Toolbar, MenuItem } from "@mui/material"
 const App = () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
