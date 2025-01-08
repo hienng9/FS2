@@ -48,6 +48,7 @@ router.post("/:id/entries", (req, res) => {
     if (error instanceof Error) {
       errorMessage += error.message
     }
+    
     res.status(400).json({ error: errorMessage })
   }
 })
